@@ -1,0 +1,189 @@
+/* ===== NdlovuBetting dark sportsbook theme ===== */
+:root {
+    --nb-green: #16c172;
+    --nb-green-dark: #13a862;
+    --nb-bg: #12151c;
+    --nb-bg-2: #0c0e13;
+    --nb-panel: #1a1f29;
+    --nb-border: #2a3140;
+    --nb-text: #e7ebf0;
+    --nb-muted: #8b94a3;
+}
+
+body {
+    background-color: var(--nb-bg);
+    color: var(--nb-text);
+}
+
+/* Brand mark next to the name */
+.nb-brand-mark {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 7px;
+    background: var(--nb-green);
+    color: #04130b;
+    font-weight: 800;
+    margin-right: 8px;
+}
+
+/* Navbar */
+.nb-navbar {
+    background: var(--nb-bg-2);
+    border-bottom: 1px solid var(--nb-border);
+}
+
+    .nb-navbar .navbar-brand,
+    .nb-navbar .nav-link {
+        color: var(--nb-text) !important;
+    }
+
+        .nb-navbar .nav-link:hover {
+            color: var(--nb-green) !important;
+        }
+
+/* Inputs */
+.form-control, .form-select {
+    background-color: var(--nb-panel);
+    border: 1px solid var(--nb-border);
+    color: var(--nb-text);
+}
+
+    .form-control:focus, .form-select:focus {
+        background-color: var(--nb-panel);
+        border-color: var(--nb-green);
+        color: var(--nb-text);
+        box-shadow: 0 0 0 .2rem rgba(22,193,114,.20);
+    }
+
+    .form-control::placeholder {
+        color: #5a6473;
+    }
+
+/* Green button */
+.btn-nb {
+    background: var(--nb-green);
+    border: 0;
+    color: #04130b;
+    font-weight: 700;
+}
+
+    .btn-nb:hover {
+        background: var(--nb-green-dark);
+        color: #04130b;
+    }
+
+/* Section heading inside forms */
+.nb-section {
+    color: var(--nb-green);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    font-weight: 700;
+    margin: 14px 0 8px;
+}
+
+/* Cards/panels on dark */
+.nb-panel {
+    background: var(--nb-panel);
+    border: 1px solid var(--nb-border);
+    border-radius: 12px;
+}
+
+/* Links */
+a {
+    color: var(--nb-green);
+}
+
+    a:hover {
+        color: var(--nb-green-dark);
+    }
+
+/* Footer */
+.nb-footer {
+    background: var(--nb-bg-2);
+    border-top: 1px solid var(--nb-border);
+    color: var(--nb-muted);
+}
+
+
+/* ===== Dashboard + wallet styling ===== */
+.balance-card {
+    background: linear-gradient(135deg, #0e5e31, var(--nb-green));
+    border-radius: 14px;
+    color: #fff;
+}
+
+.dash-tile {
+    cursor: pointer;
+    transition: transform .12s ease, border-color .12s ease;
+}
+
+    .dash-tile:hover {
+        transform: translateY(-3px);
+        border-color: var(--nb-green);
+    }
+
+.tile-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: rgba(22, 193, 114, .15);
+}
+
+.pill {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 9px;
+    border-radius: 10px;
+}
+
+.pill-credit {
+    background: rgba(22, 193, 114, .18);
+    color: #16c172;
+}
+
+.pill-debit {
+    background: rgba(220, 53, 69, .18);
+    color: #ff6b78;
+}
+
+.modal-content {
+    background: var(--nb-panel);
+    color: var(--nb-text);
+    border: 1px solid var(--nb-border);
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--nb-border);
+}
+
+/* Make modal body + tables match the dark theme */
+.modal-body {
+    background: var(--nb-panel);
+    color: var(--nb-text);
+}
+
+.modal .table,
+.modal .table td,
+.modal .table th {
+    background-color: transparent !important;
+    color: var(--nb-text) !important;
+    border-color: var(--nb-border) !important;
+}
+
+/* Muted label cells inside modals */
+.modal .text-secondary {
+    color: var(--nb-muted) !important;
+}
+
+/* Close (X) button visible on dark */
+.modal .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}

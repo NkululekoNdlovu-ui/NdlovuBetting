@@ -1,0 +1,197 @@
+﻿@model NdlovuBetting.Models.ViewModels.WalletPageViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<h2 class="mb-1">Welcome back, @Model.FirstName</h2>
+<p class="text-secondary mb-4">Manage your wallet and profile below.</p>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="balance-card p-4 h-100">
+            <div style="opacity:.8;font-size:13px;">Wallet balance</div>
+            <div class="display-6 fw-bold">@Model.Balance.ToString("C")</div>
+            <div style="opacity:.8;font-size:12px;">@Model.AccountNumber</div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="nb-panel dash-tile p-4 h-100" data-bs-toggle="modal" data-bs-target="#walletModal">
+            <div class="tile-icon mb-3">💳</div>
+            <h5 class="mb-1">My Wallet</h5>
+            <p class="text-secondary mb-0" style="font-size:13px;">Deposit, withdraw and view your transaction history.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="nb-panel dash-tile p-4 h-100" data-bs-toggle="modal" data-bs-target="#profileModal">
+            <div class="tile-icon mb-3">👤</div>
+            <h5 class="mb-1">My Profile</h5>
+            <p class="text-secondary mb-0" style="font-size:13px;">View and edit your personal details.</p>
+        </div>
+    </div>
+</div>
+
+<!-- ===== WALLET MODAL: balance + deposit/withdraw + history ===== -->
+<div class="modal fade" id="walletModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">My Wallet</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <div class="balance-card p-4">
+                            <div style="opacity:.8;font-size:13px;">Balance (demo funds)</div>
+                            <div class="display-6 fw-bold">@Model.Balance.ToString("C")</div>
+                            <div style="opacity:.8;font-size:12px;">@Model.AccountNumber · @(Model.IsClosed ? "Closed" : "Open")</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="nb-section mb-2">Deposit / Withdraw</div>
+                        <form asp-action="Move" asp-controller="Account" method="post">
+                            <label class="form-label mb-1" style="font-size:13px;">Action</label>
+                            <select asp-for="Movement.Action" class="form-select mb-2">
+                                <option value="0">Deposit</option>
+                                <option value="1">Withdraw</option>
+                            </select>
+                            <label class="form-label mb-1" style="font-size:13px;">Amount</label>
+                            <div class="input-group mb-2">
+                                <span class="input-group-text" style="background:#12151c;border-color:#2a3140;color:#8b94a3;">R</span>
+                                <input asp-for="Movement.Amount" class="form-control" type="number" step="0.01" min="0.01" />
+                            </div>
+                            <button type="submit" class="btn btn-nb w-100">Confirm</button>
+                            <div style="color:#8b94a3;font-size:11px;margin-top:6px;">You can't withdraw more than your balance.</div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="nb-section mt-4 mb-2">Transaction History</div>
+                @if (!Model.Transactions.Any())
+                {
+                    <p class="text-secondary">No transactions yet.</p>
+                }
+                else
+                {
+                    <div class="table-responsive">
+                        <table class="table align-middle" style="font-size:14px;">
+                            <thead>
+                                <tr style="color:#8b94a3;">
+                                    <th>Date</th>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th class="text-end">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var t in Model.Transactions)
+                                {
+                                    var isCredit = t.Type == NdlovuBetting.Models.TransactionType.Credit;
+                                    <tr>
+                                        <td>@t.TransactionDate.ToString("yyyy-MM-dd")</td>
+                                        <td>
+                                            @if (isCredit)
+                                            {
+                                                <span class="pill pill-credit">Deposit</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="pill pill-debit">Withdraw</span>
+                                            }
+                                        </td>
+                                        <td>@(t.Description ?? "—")</td>
+                                        <td class="text-end">@t.SignedAmount.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ===== PROFILE MODAL ===== -->
+<!-- ===== PROFILE MODAL (view + edit) ===== -->
+<div class="modal fade" id="profileModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">My Profile</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+            </div>
+
+            <!-- VIEW MODE -->
+            <div id="profileView">
+                <div class="modal-body">
+                    <table class="table table-borderless mb-0" style="font-size:14px;">
+                        <tr><td class="text-secondary" style="width:42%;">First Name</td><td>@Model.FirstName</td></tr>
+                        <tr><td class="text-secondary">Last Name</td><td>@Model.Surname</td></tr>
+                        <tr><td class="text-secondary">Email</td><td>@Model.Email</td></tr>
+                        <tr><td class="text-secondary">Phone</td><td>@(Model.PhoneNumber ?? "—")</td></tr>
+                        <tr><td class="text-secondary">Address</td><td>@(Model.Address ?? "—")</td></tr>
+                        <tr><td class="text-secondary">ID Number</td><td>@Model.IdNumber</td></tr>
+                        <tr><td class="text-secondary">Role</td><td>Client</td></tr>
+                        <tr><td class="text-secondary">Created At</td><td>@Model.CreatedAt.ToString("yyyy/MM/dd HH:mm")</td></tr>
+                    </table>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-nb" onclick="toggleProfileEdit(true)">Edit Profile</button>
+                </div>
+            </div>
+
+            <!-- EDIT MODE -->
+            <div id="profileEdit" style="display:none;">
+                <form asp-action="EditProfile" asp-controller="Account" method="post">
+                    <div class="modal-body">
+                        <div class="mb-2">
+                            <label class="form-label mb-1" style="font-size:13px;">First Name</label>
+                            <input asp-for="Profile.FirstName" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-1" style="font-size:13px;">Last Name</label>
+                            <input asp-for="Profile.Surname" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-1" style="font-size:13px;">Email</label>
+                            <input asp-for="Profile.Email" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-1" style="font-size:13px;">Phone</label>
+                            <input asp-for="Profile.PhoneNumber" class="form-control" />
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label mb-1" style="font-size:13px;">Address</label>
+                            <input asp-for="Profile.Address" class="form-control" />
+                        </div>
+                        <p class="text-secondary mb-0" style="font-size:12px;">Your ID number can't be changed.</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" onclick="toggleProfileEdit(false)">Cancel</button>
+                        <button type="submit" class="btn btn-nb">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <script>
+        function toggleProfileEdit(editing) {
+            document.getElementById('profileView').style.display = editing ? 'none' : 'block';
+            document.getElementById('profileEdit').style.display = editing ? 'block' : 'none';
+        }
+    </script>
+}

@@ -1,0 +1,23 @@
+## .NET build output
+bin/
+obj/
+out/
+
+## Visual Studio
+.vs/
+*.user
+*.suo
+
+## Rider / VS Code
+.idea/
+.vscode/
+
+## App secrets (NEVER commit these)
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+*.env
+
+## OS files
+.DS_Store
+Thumbs.db

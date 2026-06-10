@@ -1,0 +1,24 @@
+# Build output - the image rebuilds these itself
+bin/
+obj/
+out/
+
+# IDE / VS
+.vs/
+.idea/
+.vscode/
+*.user
+
+# Git
+.git/
+.gitignore
+
+# Local secrets - never copy into the image
+appsettings.Development.json
+appsettings.Production.json
+secrets.json
+*.env
+
+# Docker
+Dockerfile
+.dockerignore
