@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ndlovubetting
+  labels:
+    app: ndlovubetting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ndlovubetting
+  template:
+    metadata:
+      labels:
+        app: ndlovubetting
+    spec:
+      containers:
+      - name: ndlovubetting
+        image: nkulu/ndlovubetting:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
