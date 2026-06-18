@@ -23,4 +23,4 @@ spec:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
         - name: ConnectionStrings__DefaultConnection
-          value: "Server=host.docker.internal\\SQLEXPRESS;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword;"
+          value: "Server=mssql-service,1433;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;"
