@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ndlovubetting
-        image: nginx:latest
+        image: nkulu/ndlovubetting:latest
         ports:
         - containerPort: 8080
         env:
