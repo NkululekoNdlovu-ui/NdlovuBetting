@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: ndlovubetting
-        image: quay.io/nkulu/ndlovubetting:latest
+        image: quay.io/nkulu/ndlovubetting:v2
         ports:
         - containerPort: 8080
         env:
