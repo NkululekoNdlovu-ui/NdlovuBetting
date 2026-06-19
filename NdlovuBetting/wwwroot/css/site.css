@@ -187,3 +187,76 @@ a {
 .modal .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+/* ===== Admin pages ===== */
+.nb-stat {
+    background: var(--nb-panel);
+    border: 1px solid var(--nb-border);
+    border-radius: 12px;
+    padding: 16px 18px;
+}
+
+    .nb-stat .n {
+        font-size: 24px;
+        font-weight: 700;
+    }
+
+    .nb-stat .l {
+        color: var(--nb-muted);
+        font-size: 12px;
+        text-transform: uppercase;
+        letter-spacing: .05em;
+    }
+
+.pill-admin {
+    background: rgba(220,53,69,.18);
+    color: #ff6b78;
+}
+
+.pill-client {
+    background: rgba(22,193,114,.18);
+    color: #16c172;
+}
+
+.btn-xs {
+    font-size: 12px;
+    padding: 3px 10px;
+}
+
+/* Admin table */
+.table > :not(caption) > * > * {
+    background: transparent;
+    color: var(--nb-text);
+    border-color: var(--nb-border);
+}
+
+thead th {
+    color: var(--nb-muted) !important;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+}
+
+/* Pagination on dark */
+.page-link {
+    background: var(--nb-panel);
+    border-color: var(--nb-border);
+    color: var(--nb-text);
+}
+
+    .page-link:hover {
+        background: var(--nb-bg-2);
+        color: var(--nb-green);
+    }
+
+.page-item.active .page-link {
+    background: var(--nb-green);
+    border-color: var(--nb-green);
+    color: #04130b;
+}
+
+.page-item.disabled .page-link {
+    background: var(--nb-panel);
+    border-color: var(--nb-border);
+    color: #5a6473;
+}

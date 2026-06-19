@@ -1,0 +1,89 @@
+﻿@model NdlovuBetting.Models.ViewModels.UserDetailsViewModel
+@{
+    ViewData["Title"] = "User Details";
+}
+
+<a asp-action="Index" style="color:var(--nb-green);text-decoration:none;font-size:14px;">&larr; Back to users</a>
+
+<div class="d-flex justify-content-between align-items-center mb-3 mt-2">
+    <h3 class="mb-0">@Model.FullName</h3>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light btn-sm">Edit User</a>
+        <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger btn-sm">Delete User</a>
+    </div>
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">@TempData["Success"]</div>
+}
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">@TempData["Error"]</div>
+}
+
+<div class="row g-3">
+    <!-- USER INFO -->
+    <div class="col-lg-5">
+        <div class="nb-panel p-4">
+            <div class="nb-section mb-3">User Details</div>
+            <table class="table table-borderless mb-0" style="font-size:14px;">
+                <tr><td class="text-secondary" style="width:40%;">First Name</td><td>@Model.FirstName</td></tr>
+                <tr><td class="text-secondary">Last Name</td><td>@Model.Surname</td></tr>
+                <tr><td class="text-secondary">ID Number</td><td>@Model.IdNumber</td></tr>
+                <tr><td class="text-secondary">Email</td><td>@Model.Email</td></tr>
+                <tr><td class="text-secondary">Phone</td><td>@(Model.PhoneNumber ?? "—")</td></tr>
+                <tr><td class="text-secondary">Address</td><td>@(Model.Address ?? "—")</td></tr>
+                <tr><td class="text-secondary">Role</td><td>@Model.Role</td></tr>
+                <tr><td class="text-secondary">Created</td><td>@Model.CreatedAt.ToString("yyyy-MM-dd HH:mm")</td></tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- ACCOUNTS -->
+    <div class="col-lg-7">
+        <div class="nb-panel p-4">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div class="nb-section">Accounts</div>
+                <a asp-action="AddAccount" asp-route-userId="@Model.Id" class="btn btn-nb btn-xs">+ Add Account</a>
+            </div>
+
+            @if (!Model.Accounts.Any())
+            {
+                <p class="text-secondary mb-0">This user has no accounts.</p>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table align-middle mb-0" style="font-size:14px;">
+                        <thead>
+                            <tr><th>Account #</th><th class="text-end">Balance</th><th>Status</th><th class="text-end"></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var a in Model.Accounts)
+                            {
+                                <tr>
+                                    <td>@a.AccountNumber</td>
+                                    <td class="text-end">@a.Balance.ToString("C")</td>
+                                    <td>
+                                        @if (a.Status == "Open")
+                                        {
+                                            <span class="pill pill-client">Open</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="pill" style="background:rgba(139,148,163,.18);color:#aeb6c2;">Closed</span>
+                                        }
+                                    </td>
+                                    <td class="text-end">
+                                        <a asp-controller="Accounts" asp-action="Details" asp-route-id="@a.Id" class="btn btn-nb btn-xs">Open</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+        </div>
+    </div>
+</div>
