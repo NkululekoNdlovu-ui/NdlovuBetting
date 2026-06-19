@@ -34,10 +34,22 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 
 var app = builder.Build();
-// Run the seeder once at startup to ensure roles + admin exist.
+
+// Apply migrations + seed on startup, but don't crash the app if the DB
+// isn't reachable yet (important for containers/OpenShift).
 using (var scope = app.Services.CreateScope())
 {
-    await DbSeeder.SeedAsync(scope.ServiceProvider);
+    try
+    {
+        var db = scope.ServiceProvider.GetRequiredService<NdlovuBetting.Data.ApplicationDbContext>();
+        db.Database.Migrate();
+        await DbSeeder.SeedAsync(scope.ServiceProvider);
+    }
+    catch (Exception ex)
+    {
+        var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+        logger.LogError(ex, "Database migrate/seed failed on startup. The app will still start.");
+    }
 }
 
 // Configure the HTTP request pipeline.
@@ -46,6 +58,10 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Home/Error");
     app.UseHsts();
 }
+
+
+// NdlovuBetting - Full GitOps Pipeline with GitHub Actions + ArgoCD
+// Deployed to Kubernetes via automated CI/CD
 
 app.UseHttpsRedirection();
 app.UseRouting();
