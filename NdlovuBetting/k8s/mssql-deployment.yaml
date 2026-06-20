@@ -1,4 +1,9 @@
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: ndlovubetting
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: mssql-pvc
