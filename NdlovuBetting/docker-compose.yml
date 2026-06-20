@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      ACCEPT_EULA: "Y"
+      SA_PASSWORD: "YourPassword123!"
+    ports:
+      - "1433:1433"
+    volumes:
+      - mssql-data:/var/opt/mssql
+
+  app:
+    build: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      ConnectionStrings__DefaultConnection: "Server=mssql,1433;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=true;"
+    ports:
+      - "8000:8080"
+    depends_on:
+      - mssql
+
+volumes:
+  mssql-data:
