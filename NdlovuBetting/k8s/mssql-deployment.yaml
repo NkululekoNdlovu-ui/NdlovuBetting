@@ -1,3 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ndlovubetting
+  labels:
+    app: ndlovubetting
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ndlovubetting
+  template:
+    metadata:
+      labels:
+        app: ndlovubetting
+    spec:
+      containers:
+      - name: ndlovubetting
+        image: quay.io/nkulu/ndlovubetting:latest
+        ports:
+        - containerPort: 8080
+        env:
+        - name: ASPNETCORE_ENVIRONMENT
+          value: "Production"
+        - name: ConnectionStrings__DefaultConnection
+          value: "Server=mssql-service,1433;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=true;"
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: mssql-pvc
+  namespace: ndlovubetting
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
 apiVersion: v1
 kind: Service
 metadata:
@@ -31,8 +70,28 @@ spec:
         image: mcr.microsoft.com/mssql/server:2022-latest
         ports:
         - containerPort: 1433
+        volumeMounts:
+        - name: mssql-storage
+          mountPath: /var/opt/mssql
         env:
         - name: ACCEPT_EULA
           value: "Y"
         - name: SA_PASSWORD
           value: "YourPassword123!"
+      volumes:
+      - name: mssql-storage
+        persistentVolumeClaim:
+          claimName: mssql-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndlovubetting-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ndlovubetting
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
