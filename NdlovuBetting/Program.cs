@@ -19,7 +19,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     errorNumbersToAdd: null);
     }));
 
-// 2) Add ASP.NET Identity with roles, storing users in our database
+// 2) Add ASP.NET Identity with roles1, storing users in our database
 builder.Services
     .AddIdentity<ApplicationUser, IdentityRole>(options =>
     {
@@ -98,3 +98,5 @@ app.MapControllerRoute(
     .WithStaticAssets();
 
 app.Run();
+
+// NdlovuBetting - Full GitOps Pipeline with GitHub Actions + ArgoCD
