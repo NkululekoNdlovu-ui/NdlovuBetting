@@ -19,7 +19,7 @@ jobs:
       - name: Login to OCIR
         uses: docker/login-action@v2
         with:
-          registry: ocir.io
+          registry: af-johannesburg-1.ocir.io
           username: ${{ secrets.OCIR_USERNAME }}
           password: ${{ secrets.OCIR_TOKEN }}
       
@@ -29,5 +29,5 @@ jobs:
           context: ./NdlovuBetting
           push: true
           tags: |
-            ocir.io/af-johannesburg-1/nkulufr98/ndlovubetting:latest
-            ocir.io/af-johannesburg-1/nkulufr98/ndlovubetting:${{ github.sha }}
+            af-johannesburg-1.ocir.io/nkulufr98/ndlovubetting:latest
+            af-johannesburg-1.ocir.io/nkulufr98/ndlovubetting:${{ github.sha }}
