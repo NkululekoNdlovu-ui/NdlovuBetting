@@ -11,6 +11,10 @@ using NdlovuBetting.Models.Dtos;
 namespace NdlovuBetting.Controllers
 {
     // Everything in here is admin-only.
+
+    // Everything in here is admin-only.
+    // GitOps Auto-Sync Test - v1
+
     [Authorize(Roles = "Admin")]
     public class UsersController : Controller
     {
