@@ -11,7 +11,13 @@ builder.Services.AddControllersWithViews();
 // 1) Connect to SQL Server using the connection string from appsettings.json
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString, sqlOptions =>
+    {
+        sqlOptions.EnableRetryOnFailure(
+    maxRetryCount: 5,
+    maxRetryDelay: TimeSpan.FromSeconds(10),
+    errorNumbersToAdd: null);
+    }));
 
 // 2) Add ASP.NET Identity with roles, storing users in our database
 builder.Services
@@ -35,15 +41,30 @@ builder.Services.ConfigureApplicationCookie(options =>
 
 var app = builder.Build();
 
-// Apply migrations + seed on startup, but don't crash the app if the DB
-// isn't reachable yet (important for containers/OpenShift).
+
+// Apply migrations + seed on startup with RETRIES
 using (var scope = app.Services.CreateScope())
 {
     try
     {
         var db = scope.ServiceProvider.GetRequiredService<NdlovuBetting.Data.ApplicationDbContext>();
-        db.Database.Migrate();
-        await DbSeeder.SeedAsync(scope.ServiceProvider);
+
+        // Retry 5 times with 2-second delays
+        int retries = 0;
+        while (retries < 5)
+        {
+            try
+            {
+                db.Database.Migrate();
+                await DbSeeder.SeedAsync(scope.ServiceProvider);
+                break; // Success!
+            }
+            catch (Exception) when (retries < 4)
+            {
+                retries++;
+                await Task.Delay(2000); // Wait 2 seconds
+            }
+        }
     }
     catch (Exception ex)
     {
