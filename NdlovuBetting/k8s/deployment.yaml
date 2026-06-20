@@ -24,3 +24,16 @@ spec:
           value: "Production"
         - name: ConnectionStrings__DefaultConnection
           value: "Server=mssql-service,1433;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=true;"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ndlovubetting-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ndlovubetting
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8080
