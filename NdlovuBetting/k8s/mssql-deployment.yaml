@@ -4,18 +4,6 @@ metadata:
   name: ndlovubetting
 ---
 apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mssql-pvc
-  namespace: ndlovubetting
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 5Gi
----
-apiVersion: v1
 kind: Service
 metadata:
   name: mssql-service
@@ -58,5 +46,4 @@ spec:
           value: "YourPassword123!"
       volumes:
       - name: mssql-storage
-        persistentVolumeClaim:
-          claimName: mssql-pvc
+        emptyDir: {}
