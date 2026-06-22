@@ -1,122 +1,122 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: ndlovubetting
----
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: mssql-config
-  namespace: ndlovubetting
-data:
-  init.sql: |
-    CREATE DATABASE NdlovuBettingDb;
-    GO
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: mssql-service
-  namespace: ndlovubetting
-spec:
-  selector:
-    app: mssql
-  type: ClusterIP
-  ports:
-  - port: 1433
-    targetPort: 1433
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: mssql
-  namespace: ndlovubetting
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: mssql
-  template:
-    metadata:
-      labels:
-        app: mssql
-    spec:
-      containers:
-      - name: mssql
-        image: mcr.microsoft.com/mssql/server:2022-latest
-        ports:
-        - containerPort: 1433
-        env:
-        - name: ACCEPT_EULA
-          value: "Y"
-        - name: SA_PASSWORD
-          value: "YourPassword123!"
-        - name: MSSQL_PID
-          value: "Express"
-        resources:
-          requests:
-            memory: "512Mi"
-            cpu: "500m"
-          limits:
-            memory: "1Gi"
-            cpu: "1"
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: ndlovubetting-service
-  namespace: ndlovubetting
-spec:
-  type: LoadBalancer
-  selector:
-    app: ndlovubetting
-  ports:
-  - protocol: TCP
-    port: 80
-    targetPort: 8080
----
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: ndlovubetting
-  namespace: ndlovubetting
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: ndlovubetting
-  template:
-    metadata:
-      labels:
-        app: ndlovubetting
-    spec:
-      containers:
-      - name: ndlovubetting
-        image: quay.io/nkulu/ndlovubetting:latest
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 8080
-        env:
-        - name: ASPNETCORE_ENVIRONMENT
-          value: "Production"
-        - name: ConnectionStrings__DefaultConnection
-          value: "Server=mssql-service;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=false;Connection Timeout=30;"
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 60
-          periodSeconds: 10
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 8080
-          initialDelaySeconds: 30
-          periodSeconds: 5
-        resources:
-          requests:
-            memory: "256Mi"
-            cpu: "250m"
-          limits:
-            memory: "512Mi"
-            cpu: "500m"
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: ndlovubetting
+# ---
+# apiVersion: v1
+# kind: ConfigMap
+# metadata:
+#   name: mssql-config
+#   namespace: ndlovubetting
+# data:
+#   init.sql: |
+#     CREATE DATABASE NdlovuBettingDb;
+#     GO
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: mssql-service
+#   namespace: ndlovubetting
+# spec:
+#   selector:
+#     app: mssql
+#   type: ClusterIP
+#   ports:
+#   - port: 1433
+#     targetPort: 1433
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: mssql
+#   namespace: ndlovubetting
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: mssql
+#   template:
+#     metadata:
+#       labels:
+#         app: mssql
+#     spec:
+#       containers:
+#       - name: mssql
+#         image: mcr.microsoft.com/mssql/server:2022-latest
+#         ports:
+#         - containerPort: 1433
+#         env:
+#         - name: ACCEPT_EULA
+#           value: "Y"
+#         - name: SA_PASSWORD
+#           value: "YourPassword123!"
+#         - name: MSSQL_PID
+#           value: "Express"
+#         resources:
+#           requests:
+#             memory: "512Mi"
+#             cpu: "500m"
+#           limits:
+#             memory: "1Gi"
+#             cpu: "1"
+# ---
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: ndlovubetting-service
+#   namespace: ndlovubetting
+# spec:
+#   type: LoadBalancer
+#   selector:
+#     app: ndlovubetting
+#   ports:
+#   - protocol: TCP
+#     port: 80
+#     targetPort: 8080
+# ---
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: ndlovubetting
+#   namespace: ndlovubetting
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: ndlovubetting
+#   template:
+#     metadata:
+#       labels:
+#         app: ndlovubetting
+#     spec:
+#       containers:
+#       - name: ndlovubetting
+#         image: quay.io/nkulu/ndlovubetting:latest
+#         imagePullPolicy: Always
+#         ports:
+#         - containerPort: 8080
+#         env:
+#         - name: ASPNETCORE_ENVIRONMENT
+#           value: "Production"
+#         - name: ConnectionStrings__DefaultConnection
+#           value: "Server=mssql-service;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=false;Connection Timeout=30;"
+#         livenessProbe:
+#           httpGet:
+#             path: /
+#             port: 8080
+#           initialDelaySeconds: 60
+#           periodSeconds: 10
+#         readinessProbe:
+#           httpGet:
+#             path: /
+#             port: 8080
+#           initialDelaySeconds: 30
+#           periodSeconds: 5
+#         resources:
+#           requests:
+#             memory: "256Mi"
+#             cpu: "250m"
+#           limits:
+#             memory: "512Mi"
+#             cpu: "500m"
