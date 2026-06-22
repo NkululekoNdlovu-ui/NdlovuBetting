@@ -13,28 +13,13 @@ type: Opaque
 stringData:
   saPassword: "@MaBhiza2010"
 ---
-# Persistent Volume Claim for MSSQL data
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: mssql-pvc
-  namespace: ndlovubetting
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: oci-bv  # Oracle Cloud default storage class
-  resources:
-    requests:
-      storage: 10Gi
----
-# MSSQL StatefulSet (better for databases than Deployment)
+# MSSQL Deployment (simpler, using emptyDir)
 apiVersion: apps/v1
-kind: StatefulSet
+kind: Deployment
 metadata:
   name: mssql
   namespace: ndlovubetting
 spec:
-  serviceName: mssql-service
   replicas: 1
   selector:
     matchLabels:
@@ -44,6 +29,9 @@ spec:
       labels:
         app: mssql
     spec:
+      securityContext:
+        fsGroup: 10001
+        runAsNonRoot: false  # MSSQL needs root in container
       containers:
       - name: mssql
         image: mcr.microsoft.com/mssql/server:2022-latest
@@ -59,7 +47,7 @@ spec:
               name: mssql-sa-password
               key: saPassword
         - name: MSSQL_PID
-          value: "Developer"  # Free Developer edition
+          value: "Developer"
         resources:
           requests:
             memory: "512Mi"
@@ -70,43 +58,20 @@ spec:
         volumeMounts:
         - name: mssql-storage
           mountPath: /var/opt/mssql
-        livenessProbe:
-          exec:
-            command:
-              - /bin/bash
-              - -c
-              - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q "SELECT 1" || exit 1
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
-        readinessProbe:
-          exec:
-            command:
-              - /bin/bash
-              - -c
-              - /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P $SA_PASSWORD -Q "SELECT 1" || exit 1
-          initialDelaySeconds: 20
-          periodSeconds: 10
-          timeoutSeconds: 5
-  volumeClaimTemplates:
-  - metadata:
-      name: mssql-storage
-    spec:
-      accessModes:
-        - ReadWriteOnce
-      storageClassName: oci-bv
-      resources:
-        requests:
-          storage: 10Gi
+
+      volumes:
+      - name: mssql-storage
+        emptyDir:
+          sizeLimit: 10Gi
 ---
-# Service for MSSQL (ClusterIP - internal only)
+# Service for MSSQL
 apiVersion: v1
 kind: Service
 metadata:
   name: mssql-service
   namespace: ndlovubetting
 spec:
-  clusterIP: None  # Headless service for StatefulSet
+  type: ClusterIP
   selector:
     app: mssql
   ports:
@@ -114,7 +79,7 @@ spec:
     targetPort: 1433
     name: mssql
 ---
-# Updated NdlovuBetting Deployment (with corrected connection string)
+# NdlovuBetting App Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -132,7 +97,6 @@ spec:
       labels:
         app: ndlovubetting
     spec:
-      # Wait for MSSQL to be ready before starting the app
       initContainers:
       - name: wait-for-mssql
         image: busybox
@@ -145,9 +109,9 @@ spec:
         - containerPort: 8080
         env:
         - name: ASPNETCORE_ENVIRONMENT
-          value: "Production"  # Switch to Production once stable
+          value: "Production"
         - name: ConnectionStrings__DefaultConnection
-          value: "Server=mssql-service,1433;Database=NdlovuBettingDb;User Id=sa;Password=@MaBhiza2010;TrustServerCertificate=true;Encrypt=true;Connection Timeout=30;"
+          value: "Server=mssql-service,1433;Database=NdlovuBettingDb;User Id=sa;Password=@MaBhiza2010;TrustServerCertificate=true;Encrypt=false;Connection Timeout=30;"
         resources:
           requests:
             memory: "256Mi"
@@ -168,7 +132,7 @@ spec:
           initialDelaySeconds: 20
           periodSeconds: 5
 ---
-# LoadBalancer Service for the app (already exists, but included for completeness)
+# LoadBalancer Service for the app
 apiVersion: v1
 kind: Service
 metadata:
