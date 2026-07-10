@@ -17,7 +17,7 @@ services:
       ASPNETCORE_ENVIRONMENT: "Development"
       ConnectionStrings__DefaultConnection: "Server=mssql,1433;Database=NdlovuBettingDb;User Id=sa;Password=YourPassword123!;TrustServerCertificate=true;Encrypt=true;"
     ports:
-      - "8000:8080"
+      - "8000:8081"
     depends_on:
       - mssql
 
