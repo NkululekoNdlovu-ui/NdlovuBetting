@@ -105,7 +105,7 @@ spec:
         image: quay.io/nkulu/ndlovubetting:38371e4201d6efb7c052a0c01a48a929bb42bb40
         imagePullPolicy: Always
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         env:
         - name: ASPNETCORE_ENVIRONMENT
           value: "Production"
@@ -121,13 +121,13 @@ spec:
         livenessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 8081
           initialDelaySeconds: 30
           periodSeconds: 10
         readinessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 8081
           initialDelaySeconds: 20
           periodSeconds: 5
 ---
