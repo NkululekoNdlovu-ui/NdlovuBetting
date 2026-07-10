@@ -102,7 +102,7 @@ spec:
         command: ['sh', '-c', "until nc -z mssql-service 1433; do echo waiting for mssql; sleep 2; done"]
       containers:
       - name: ndlovubetting
-        image: quay.io/nkulu/ndlovubetting:latest
+        image: quay.io/nkulu/ndlovubetting:38371e4201d6efb7c052a0c01a48a929bb42bb40
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
